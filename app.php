@@ -12,7 +12,9 @@ if(php_sapi_name() === 'cli'){
 	//URL of the page to be parsed
 	$url = "https://journals.sagepub.com/home/VRT";
     
-	//Initializing DOM object
+   /*
+    //Initializing DOM object
+    libxml_use_internal_errors(true);
     $doc = new DOMDocument();
 	
 	//Reading the content of the url
@@ -25,5 +27,29 @@ if(php_sapi_name() === 'cli'){
         $href =  $item->getAttribute('href');
         var_dump($href);
     }
+    */
+   
+
+    /**
+     * Getting web page content using cURL
+     */
+    $c = curl_init($url);
+    curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($c, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($c, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_setopt($c, CURLOPT_FOLLOWLOCATION, TRUE);
+   
+    $html = curl_exec($c);
+    //echo $html;
+    $outfile = "url2.txt";
+    file_put_contents($outfile, $html);
+    
+    if (curl_error($c))
+        die(curl_error($c));
+
+    // Get the status code
+    $status = curl_getinfo($c, CURLINFO_HTTP_CODE);
+    
+    curl_close($c);
 }
 ?>
